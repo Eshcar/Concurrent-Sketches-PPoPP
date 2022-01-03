@@ -1,0 +1,286 @@
+\section{Generic concurrent sketch algorithm}
+\label{sec:genericAlg}
+
+We now present our generic concurrent  algorithm. 
+The algorithm uses, as a building block, an existing (non-parallel) sketch. 
+To this end, we extend the standard sketch interface in Section~\ref{sec:composable-sketches}, 
+making it usable within our generic framework.  
+Our algorithm is adaptive -- it serialises ingestion in small streams and parallelises it in large ones.
+For clarity of presentation, we  present in Section~\ref{sec:basic-generic-alg} the parallel phase of the algorithm, which provides relaxed semantics appropriate for large streams;  
+in the full paper~\cite{rinberg2019fast}
+%in the supplementary material %Section~\ref{sec:proofs}
+we prove that it is strongly linearisable
+with respect to an $r$-relaxation of the sequential sketch with which it is instantiated.
+Section~\ref{ssec:small-streams} then discusses the adaptation for small streams.
+
+
+\subsection{Composable sketches}
+\label{sec:composable-sketches}
+
+In order to be able to build upon an existing sketch \emph{S},
+we first extend it to support a limited form of concurrency.
+Sketches that support this extension are called \emph{composable}.
+
+A composable sketch has to allow concurrency between merges and queries.
+To this end, we add a \emph{snapshot} API that can run concurrently with merge and
+obtains a queryable copy of the sketch. The sequential specification of this operation is as follows:
+\begin{description}
+    \item[$S$.snapshot()] returns a copy $S'$ of $S$ such that immediately after $S'$ is returned,
+     $S$.query($arg$) = $S'$.query($arg$) for every possible $arg$.
+\end{description}
+
+A composable sketch needs to allow concurrency only between snapshots
+and other snapshot and merge operations, and we require that such concurrent
+executions be strongly linearisable. Our $\Theta$ sketch, shown below,
+simply accesses an atomic variable that holds the query result. In other sketches
+snapshots can be achieved efficiently by a double collect of the relevant state.
+
+\paragraph{Pre-filtering} When multiple sketches are used in a multi-threaded algorithm,
+we can optimise them by sharing ``hints'' about the processed data.
+This is useful when the stream sketching function depends on the processed stream prefix.
+For example, we explain below how $\Theta$ sketches sharing a common value of $\Theta$ can sample fewer updates.
+Another example is reservoir sampling~\cite{vitter1985random}. To support this optimisation,
+we add the following two APIs:
+\begin{description}
+    \item[$S$.calcHint()] returns a value $h \neq 0$ to be used as a hint.
+    \item[$S$.shouldAdd($h$, $a$)] given a hint $h$, filters out updates 
+    that do not affect the sketch's state.
+\end{description}    
+    Formally, the semantics of these APIs are defined using the notion of summary:
+    (1) When a sketch is initialised, we say that its state (or simply the sketch) \emph{summarises} the empty history,
+    and similarly, the empty stream; we refer to the sketch as \emph{empty}.
+    (2) After we apply a sequential history 
+		\[H= S.update(a_1), S.resp(a_1), \dots S.update(a_n), S.resp(a_n)\] 
+    to a sketch $S$, we say that $S$ \emph{summarises} history $H$, and,
+    similarly, summarises the stream $a_1, \dots ,a_n$.
+    Given a sketch $S$ that summarises a stream $A$, if shouldAdd($S.calcHint()$, $a$) returns false then
+    for every streams $B_1,B_2$ and sketch $S'$ that summarises $A||B_1||a||B_2$,
+    $S'$ also summarises $A||B_1||B_2$.
+
+These APIs do not need to support concurrency, and may be trivially implemented by always returning $true$.
+Note that $S$.shouldAdd is a static function that does not depend on the current state of $S$.
+
+\paragraph{Composable $\Theta$ sketch}
+ 
+We add the three additional APIs to Algorithm~\ref{alg:composable-theta}.
+The snapshot method copies $\mathit{est}$. Note that the
+result of a merge is only visible after writing to est, because it is the only variable accessed by
+the query. As $\mathit{est}$ is an atomic variable, the requirement on snapshot and merge is
+met. To minimise the number of updates, calcHint returns $\Theta$
+and shouldAdd checks if $h(a) < \Theta$, which is safe because the value of
+$\Theta$ in sketch $S$ is monotonically decreasing. Therefore, if $h(a) \geq \Theta$
+then $h(a)$ will never enter the \emph{sampleSet}.
+
+\begin{algorithm}[htb]
+    \small
+    %\begin{multicols}{2}
+    \begin{algorithmic}[1]
+        %\begin{varwidth}[t]{0.9\linewidth} 
+        \Vars
+        \State   sampleSet, init $k$ $1$'s \Comment samples
+        \State  $\Theta$, init $1$			\Comment threshold
+        \State {\tt atomic} est, init $0$ \Comment estimate
+        \State $h$, init random uniform hash function 
+        \EndFor
+        
+        \Procedure{query}{arg}
+        \State \Return $est$ \label{l:query}
+        \EndProcedure
+        
+        \Procedure{update}{arg}
+        \If{$h$(arg) $\geq \Theta$} \Return
+        \EndIf
+        \State add $h$(arg) to \emph{sampleSet}
+        \State keep $k$ smallest samples in \emph{sampleSet}
+        \State $\Theta \leftarrow max(sampleSet)$
+        \State $\mathit{est}$ $\leftarrow $ $\left( |\text{sampleSet}|-1 \right)$ / $\Theta$
+        \EndProcedure
+        %\end{varwidth}\quad\quad\quad 
+        %\columnbreak
+        %\begin{varwidth}[t]{1\linewidth}
+
+        \Procedure{merge}{S}
+        \State sampleSet $\leftarrow$ merge sampleSet and $S$.sampleSet
+        \State keep $k$ smallest values in sampleSet
+        \State $\Theta \leftarrow max($sampleSet$)$
+        \State $\mathit{est}$ $\leftarrow $ $\left( |\text{sampleSet}|-1 \right)$ / $\Theta$ \label{l:update-est}
+        \EndProcedure
+        
+        \Procedure{snapshot}{}
+            \State $localCopy \leftarrow empty sketch$
+            \State $localCopy.\mathit{est} \leftarrow \mathit{est}$
+            \State \Return $localCopy$
+        \EndProcedure
+    
+        \Procedure{calcHint}{}
+            \State \Return $\Theta$
+        \EndProcedure
+    
+        \Procedure{shouldAdd}{H, arg}
+            \State \Return $h$(arg) $< H$
+        \EndProcedure
+    %\end{varwidth}
+
+    \end{algorithmic}
+    %\end{multicols}
+    \caption{Composable $\Theta$ sketch.}
+    \label{alg:composable-theta}
+\end{algorithm}
+
+\subsection{Generic algorithm}
+\label{sec:basic-generic-alg}
+
+To simplify the presentation and proof, we first discuss an unoptimised version of
+our generic concurrent algorithm (Algorithm~\ref{alg:generic-concurrent} without the gray lines)  called 
+\emph{ParSketch},
+and later an optimised version of the same algorithm (Algorithm~\ref{alg:generic-concurrent} including the gray lines
+and excluding underscored line~\ref{l:signal}).
+
+The algorithm is instantiated by a composable sketch and sequential sketches.
+It uses multiple threads to process incoming stream elements 
+and services queries at any time during the sketch's construction.
+Specifically, it uses $N$ worker threads, $t_1,\dots,t_N$, each of which samples
+stream elements into a local sketch $localS_i$, and a propagator thread $t_0$ that merges local sketches
+into a shared composable sketch $globalS$. Although the local sketch resides in
+shared memory, it is updated exclusively by its owner update thread $t_i$ and 
+read exclusively by $t_0$. Moreover, updates and reads do not happen in
+parallel, and so cache invalidations are minimised. The global sketch is updated only by $t_0$
+and read by query threads. We allow an unbounded number of query threads. 
+
+After $b$ updates are added to $localS_i$, $t_i$ signals to the propagator to merge
+it with the shared sketch. It synchronises with $t_0$ using a 
+single \emph{atomic} variable $prop_i$, which $t_i$ sets to 0.  
+Because $prop_i$ is atomic, the memory model
+guarantees that all preceding updates to $t_i$'s local sketch are visible to
+the background thread once $prop_i$'s update is.
+This signalling is relatively expensive (involving a memory fence),  
+but we do it only once per $b$ items retained in the local sketch.
+
+After signalling to $t_0$, $t_i$ waits
+until $prop_i \neq 0$  (line~\ref{l:wait}); 
+this indicates that the propagation has completed, and $t_i$ can 
+reuse its local sketch. Thread $t_0$ piggybacks the hint \emph{H} it
+obtains from the global sketch on $prop_i$,
+and so there is no need for further synchronisation in order to pass the hint.
+
+Before updating the local sketch, $t_i$ invokes shouldAdd to check
+whether it needs to process \emph{a} or not. For example, the $\Theta$ sketch discards updates whose hashes are
+greater than the current value of $\Theta$. The global thread passes the global sketch's
+value of $\Theta$ to the update threads, pruning updates that would end up being discarded
+during propagation. This significantly
+reduces the frequency of propagations and associated memory fences.
+
+\begin{algorithm}[htb]
+    \small
+    %\begin{multicols}{2}
+    \begin{algorithmic}[1]
+    \setcounter{ALG@line}{100}
+
+    \Vars
+    \State composable sketch \emph{globalS}, init empty
+    \State constant $b$ \Comment relaxation is $2Nb$
+    \ForEach{update thread $t_i$} , $0 \leq i \leq N$
+        \State sketch \emph{localS$_i$}\ingray{[$2$]}, init empty
+        \ingray{\State int \emph{cur}$_i$, init 0}
+        \State int $counter_i$, init $0$
+        \State int \emph{hint}$_i$, init $1$
+        \State int {\tt atomic} $prop_i$, init $1$
+    \EndFor
+    \EndFor
+
+    \Procedure{propagator}{}
+    \While {true}
+    \ForAll{thread $t_i$ s.t. $prop_i=0$}
+        \State $globalS.merge(localS_i$\ingray{[1-$cur_i$]}$)$ \label{l:merge}
+        \State $localS_i$\ingray{[1-$cur_i$]}$ \leftarrow $empty sketch \label{l:emptyAux}
+		\State $prop_i \leftarrow globalS.calcHint()$ \label{l:calcHint}
+    \EndFor
+    \EndWhile
+    \EndProcedure
+
+    %\columnbreak
+
+    \Procedure{query}{arg}
+    \State $localCopy \leftarrow globalS.snapshot(localCopy)$
+    \State \Return $localCopy.query(arg)$
+    \EndProcedure
+    
+    \Procedure{update$_i$}{$a$}
+    \If{$\neg$shouldAdd(\emph{hint}$_i$, $a$)} \Return \label{l:shouldAdd}
+    \EndIf
+    \State $counter_i \leftarrow counter_i + 1$ \label{l:countup}
+    \State $localS_i$\ingray{[$cur_i$]}$.update(a)$ \label{l:update}
+    \If{$counter_i = b$} \label{l:checkfull}
+    \State \underline{$prop_i \leftarrow 0$} \Comment In non-optimised version\label{l:signal}
+    \State wait until $prop_i \neq 0$ \label{l:wait}
+    \ingray{\State $cur_i \leftarrow 1 - cur_i$} \label{opt:l:swap-local-aux}
+    \State \emph{hint}$_i \leftarrow prop_i$ \label{l:updateHint}
+    \State $counter_i \leftarrow 0$ \label{l:zeroCounter}
+    \ingray{\State $prop_i \leftarrow 0$} \Comment In optimised version\label{opt:l:signal}
+    \EndIf
+    \EndProcedure
+
+    \end{algorithmic}
+    %\end{multicols}
+    \caption{\ingray{Optimised} generic concurrent algorithm.}
+    \label{alg:generic-concurrent}
+\end{algorithm}
+
+Query threads use the snapshot method, which can be safely run concurrently with merge,
+hence there is no need to synchronise between the query threads and $t_0$. The freshness
+of the query is governed by the $r$-relaxation.
+In the full paper~\cite{rinberg2019fast},
+%In the supplementary material Section~\ref{subsec:Generic-algorithm-proof}
+we prove Lemma~\ref{lemma:genereic-strong} below, asserting that
+the relaxation is $Nb$. This may seem straightforward as $Nb$ is the combined size of the
+local sketches. Nevertheless, proving this is not trivial because the local sketches pre-filter
+many additional updates, which, as noted above, is instrumental for performance. 
+
+\begin{lemma}
+    $ParSketch$ instantiated with $SeqSketch$ is strongly linearisable with regards to $SeqSketch^{Nb}$.
+    \label{lemma:genereic-strong}
+\end{lemma}
+
+
+A limitation of \emph{ParSketch} is that update threads are idle while waiting for the propagator to execute the merge. This
+may be inefficient, especially if a single propagator iterates through many local sketches.
+Algorithm~\ref{alg:generic-concurrent} with the gray lines included and the underlined line omitted presents
+the optimised \emph{OptParSketch} algorithm, which improves thread utilisation via
+double buffering.
+
+In \emph{OptParSketch}, $localS_i$ is an array of two sketches. When $t_i$ is ready to propogate $localS_i[cur_i]$, it
+flips the $cur_i$ bit denoting which sketch it is currently working on (line~\ref{opt:l:swap-local-aux}), 
+and immediately sets $prop_i$ to 0 (line~\ref{opt:l:signal}) in order to allow the propagator to
+take the information from the other one. It then starts digesting updates in a fresh sketch.
+
+In the full paper~\cite{rinberg2019fast}
+%In the supplementary material Section~\ref{subsec:Optimised-algorithm-proof}
+we prove the correctness of the optimised
+algorithm by simulating $N$ threads of \emph{OptParSketch}
+using $2N$ threads running \emph{ParSketch}. We do this by showing
+a \emph{simulation relation}~\cite{lynch1996distributed}. We use forward simulation (with
+no prophecy variables), ensuring strong linearisability. We conclude the following theorem:
+\begin{restatable}{rthm}{optgenereicstrong}
+    \emph{OptParSketch} instantiated with $SeqSketch$ is strongly linearisable with regards to \emph{SeqSketch}$^{2Nb}$.
+    \label{lemma:opt-genereic-strong}
+\end{restatable}
+
+\subsection{Adapting to small streams}
+\label{ssec:small-streams}
+
+By Theorem~\ref{lemma:opt-genereic-strong}, a query can miss up to $r$ updates. For small
+streams, the error induced by this can be very large.
+For example, the sequential $\Theta$ sketch answers queries with perfect accuracy in streams with
+up to $k$ unique elements, but if $k<r$, the relaxation can miss \emph{all} updates.
+In other words, while the additive error is guaranteed to be bounded by $r$, the relative 
+error can be infinite.  
+
+To rectify this, we implement \emph{eager propagation} for small streams, 
+whereby update threads propagate updates immediately to the shared sketch 
+instead of buffering them. 
+% and the shared sketch is accessed sequentially (protected by a lock or CAS).  
+Note that during the eager phase, updates are processed sequentially. 
+Support for eager propagation can be added to Algorithm~\ref{alg:generic-concurrent} 
+by initialising $b$ to $1$ and having the propagator thread raise it to the
+desired buffer size once the stream exceeds some pre-defined length. 
+The error analysis of the next section can be used to determine the adaptation point.

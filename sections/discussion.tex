@@ -1,0 +1,17 @@
+\section{Conclusions}
+\label{sec:discussion}
+
+Sketches are widely used by a range of applications
+to process massive data streams and answer queries about them.
+Library functions producing sketches
+are optimised to be extremely fast, often digesting tens of millions of stream elements per second. 
+We presented a generic algorithm for parallelising such sketches and serving
+queries in real-time; the algorithm is strongly linearisable with regards to relaxed semantics.
+%\inred{We discussed the necessity of adapation for small streams, and how to implement such an adapation.}
+We showed that the error bounds of two representative sketches,
+$\Theta$ and Quantiles, do not increase drastically with such a relaxation. We also
+implemented and evaluated the solution, showed it to be scalable {and accurate}, and integrated it into
+the open-source Apache DataSketches (Incubating) library. While we analysed only two sketches, future work
+may leverage our framework for other sketches. Furthermore, it would be interesting to investigate
+additional uses of the hint, for example, in order to dynamically adapt the size of the local buffers
+and respective relaxation error.

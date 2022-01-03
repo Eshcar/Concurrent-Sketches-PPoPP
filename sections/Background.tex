@@ -1,0 +1,60 @@
+\section{Background: sequential sketches}
+\label{sec:background}
+
+A sketch $S$ summarises a collection of elements \linebreak $\Collection{a_1,a_2,\dots,a_n}$, processed
+in some order given as a stream $A=a_1,a_2,\dots,a_n$.
+The desired summary is agnostic to the processing order,
+but the underlying data structures may differ due to the order. Its API is:
+
+\begin{description}
+\item[$S$.init()] initialises $S$ to summarise the empty stream;
+\item[$S$.update($a$)] processes stream element $a$;
+\item[$S$.query($arg$)] returns the function estimated by the sketch over the stream processed thus far, e.g., the number of unique elements; 
+ takes an optional argument, e.g., the requested quantile.
+ \item[$S$.merge($S'$)] merges sketches $S$ and $S'$ into $S$; i.e., if $S$ initially summarised stream $A$ and $S'$ 
+ summarised $A'$, then after this call, $S$ summarises the concatenation of the two, $A||A'$.
+\end{description}
+
+\paragraph{Example: $\Theta$ sketch}
+
+Our running example is a $\Theta$ sketch based on the 
+\emph{K Minimum Values (KMV)} algorithm~\cite{KMV} given in Algorithm~\ref{alg:composable-theta} (ignore the last
+three functions for now). It maintains a \emph{sampleSet} and a parameter $\Theta$
+that determines which elements are added to the sample set. 
+It uses a random hash function $h$ whose outputs are uniformly distributed
+in the range $[0,1]$, and $\Theta$ is always in the same range.  
+An incoming stream element is first hashed, and then the hash is compared to $\Theta$. 
+In case it is smaller, the value is added to \emph{sampleSet}.  Otherwise, it is ignored. 
+
+Because the hash outputs are uniformly distributed, the expected proportion of values
+smaller than $\Theta$ is $\Theta$. 
+Therefore, we can estimate the number of unique elements in the stream by
+dividing the number of (unique) stored samples by $\Theta$ (assuming that the random hash function is
+drawn independently of the stream values).
+
+KMV $\Theta$ sketches keep constant-size sample sets:
+they take a parameter $k$ and keep the $k$ smallest hashes seen so far. 
+$\Theta$ is $1$ during the first $k$ updates, and 
+subsequently it is the hash of the largest sample in the set.
+Once the sample set is full,
+every update that inserts  a new element also removes the largest
+one and updates $\Theta$. This is implemented efficiently using a min-heap.
+The merge method adds a batch of samples to \emph{sampleSet}.
+
+\paragraph{Accuracy}
+
+% Sequential specification
+Today, sketches are used sequentially,
+so that the entire stream is processed 
+and then $S$.query(arg) returns an estimate of the desired function 
+on the entire stream. Accuracy is defined in one of two ways.
+One approach analyses the \emph{Relative Standard Error (RSE)} of the estimate, 
+formally defined in the full paper~\cite{rinberg2019fast}, %supplementary material Section~\ref{ssec:RSE-RMSE},
+which is the standard error normalized by the quantity being estimated.
+For example, a KMV $\Theta$ sketch with $k$ samples has an RSE of less than $1/\sqrt{k-2}$~\cite{KMV}.
+
+ A \emph{probably approximately correct (PAC)} sketch provides a result that estimates the correct result
+within some error bound $\epsilon$ with a failure probability bounded by some parameter $\delta$.  
+For example, a Quantiles sketch approximates the $\phi$th quantile of a stream with $n$ elements 
+by returning an element whose rank is in $\left[(\phi-\epsilon)n , (\phi+\epsilon)n \right]$ with 
+probability at least $1-\delta$~\cite{Agarwal:2012}.

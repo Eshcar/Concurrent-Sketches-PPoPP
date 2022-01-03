@@ -1,0 +1,368 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{25}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{}, \showDOI{}, and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showDOI}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showDOI #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showDOI      \undefined \def \showDOI       #1{#1}\fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[\protect\citeauthoryear{??}{Jav}{2011}]%
+        {JavaMemoryModel}
+ \bibinfo{year}{2011}\natexlab{}.
+\newblock \bibinfo{title}{{Java Language Specification: Chapter 17 - Threads
+  and Locks}}.
+\newblock
+  \bibinfo{howpublished}{\url{https://docs.oracle.com/javase/specs/jls/se7/html/jls-17.html}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{??}{Pre}{2018}]%
+        {PrestoHLL}
+ \bibinfo{year}{2018}\natexlab{}.
+\newblock \bibinfo{title}{{HyperLogLog in Presto: A significantly faster way to
+  handle cardinality estimation}}.
+\newblock
+  \bibinfo{howpublished}{\url{https://code.fb.com/data-infrastructure/hyperloglog/}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{??}{Dat}{2019}]%
+        {DataSketches}
+ \bibinfo{year}{2019}\natexlab{}.
+\newblock \bibinfo{title}{{Apache DataSketches (Incubating)}}.
+\newblock
+  \bibinfo{howpublished}{\url{https://incubator.apache.org/clutch/datasketches.html}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{??}{lee}{2019a}]%
+        {lee-issue}
+ \bibinfo{year}{2019}\natexlab{a}.
+\newblock \bibinfo{title}{{ArrayIndexOutOfBoundsException} during
+  serialization}.
+\newblock
+  \bibinfo{howpublished}{\url{https://github.com/DataSketches/sketches-core/issues/178\#issuecomment-365673204}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{??}{Con}{2019}]%
+        {ConcurrentThetaImp}
+ \bibinfo{year}{2019}\natexlab{}.
+\newblock \bibinfo{title}{{DataSketches: Concurrent Theta Sketch
+  Implementation}}.
+\newblock
+  \bibinfo{howpublished}{\url{https://github.com/apache/incubator-datasketches-java/blob/master/src/main/java/com/yahoo/sketches/theta/ConcurrentDirectQuickSelectSketch.java}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{??}{VMW}{2019}]%
+        {VMWareHillview}
+ \bibinfo{year}{2019}\natexlab{}.
+\newblock \bibinfo{title}{{Hillview: A Big Data Spreadsheet}}.
+\newblock
+  \bibinfo{howpublished}{\url{https://research.vmware.com/projects/hillview}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{??}{lee}{2019b}]%
+        {lee-groups-post}
+ \bibinfo{year}{2019}\natexlab{b}.
+\newblock \bibinfo{title}{{SketchesArgumentException}: Key not found and no
+  empty slot in table}.
+\newblock
+  \bibinfo{howpublished}{\url{https://groups.google.com/d/msg/sketches-user/S1PEAneLmhk/dI8RbN6iBAAJ}.}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Afek, Korland, and Yanovsky}{Afek
+  et~al\mbox{.}}{2010}]%
+        {afek2010quasi}
+\bibfield{author}{\bibinfo{person}{Yehuda Afek}, \bibinfo{person}{Guy Korland},
+  {and} \bibinfo{person}{Eitan Yanovsky}.} \bibinfo{year}{2010}\natexlab{}.
+\newblock \showarticletitle{Quasi-linearizability: Relaxed Consistency for
+  Improved Concurrency}. In \bibinfo{booktitle}{\emph{Proceedings of the 14th
+  International Conference on Principles of Distributed Systems}}
+  \emph{(\bibinfo{series}{OPODIS'10})}. \bibinfo{publisher}{Springer-Verlag},
+  \bibinfo{address}{Berlin, Heidelberg}, \bibinfo{pages}{395--410}.
+\newblock
+\showISBNx{3-642-17652-6, 978-3-642-17652-4}
+\urldef\tempurl%
+\url{http://dl.acm.org/citation.cfm?id=1940234.1940273}
+\showURL{%
+\tempurl}
+
+
+\bibitem[\protect\citeauthoryear{Agarwal, Cormode, Huang, Phillips, Wei, and
+  Yi}{Agarwal et~al\mbox{.}}{2012}]%
+        {Agarwal:2012}
+\bibfield{author}{\bibinfo{person}{Pankaj~K. Agarwal}, \bibinfo{person}{Graham
+  Cormode}, \bibinfo{person}{Zengfeng Huang}, \bibinfo{person}{Jeff Phillips},
+  \bibinfo{person}{Zhewei Wei}, {and} \bibinfo{person}{Ke Yi}.}
+  \bibinfo{year}{2012}\natexlab{}.
+\newblock \showarticletitle{Mergeable Summaries}. In
+  \bibinfo{booktitle}{\emph{Proceedings of the 31st ACM SIGMOD-SIGACT-SIGAI
+  Symposium on Principles of Database Systems}} \emph{(\bibinfo{series}{PODS
+  '12})}. \bibinfo{publisher}{ACM}, \bibinfo{address}{New York, NY, USA},
+  \bibinfo{pages}{23--34}.
+\newblock
+\showISBNx{978-1-4503-1248-6}
+\urldef\tempurl%
+\url{https://doi.org/10.1145/2213556.2213562}
+\showDOI{\tempurl}
+
+
+\bibitem[\protect\citeauthoryear{Alistarh, Kopinsky, Li, and Shavit}{Alistarh
+  et~al\mbox{.}}{2015}]%
+        {alistarh}
+\bibfield{author}{\bibinfo{person}{Dan Alistarh}, \bibinfo{person}{Justin
+  Kopinsky}, \bibinfo{person}{Jerry Li}, {and} \bibinfo{person}{Nir Shavit}.}
+  \bibinfo{year}{2015}\natexlab{}.
+\newblock \showarticletitle{The SprayList: A Scalable Relaxed Priority Queue}.
+\newblock \bibinfo{journal}{\emph{SIGPLAN Not.}} \bibinfo{volume}{50},
+  \bibinfo{number}{8} (\bibinfo{date}{Jan.} \bibinfo{year}{2015}),
+  \bibinfo{pages}{11--20}.
+\newblock
+\showISSN{0362-1340}
+\urldef\tempurl%
+\url{https://doi.org/10.1145/2858788.2688523}
+\showDOI{\tempurl}
+
+
+\bibitem[\protect\citeauthoryear{Bar-Yossef, Jayram, Kumar, Sivakumar, and
+  Trevisan}{Bar-Yossef et~al\mbox{.}}{2002}]%
+        {KMV}
+\bibfield{author}{\bibinfo{person}{Ziv Bar-Yossef}, \bibinfo{person}{T.~S.
+  Jayram}, \bibinfo{person}{Ravi Kumar}, \bibinfo{person}{D. Sivakumar}, {and}
+  \bibinfo{person}{Luca Trevisan}.} \bibinfo{year}{2002}\natexlab{}.
+\newblock \showarticletitle{Counting Distinct Elements in a Data Stream}. In
+  \bibinfo{booktitle}{\emph{Randomization and Approximation Techniques in
+  Computer Science}}, \bibfield{editor}{\bibinfo{person}{Jos'e D.~P. Rolim}
+  {and} \bibinfo{person}{Salil Vadhan}} (Eds.). \bibinfo{publisher}{Springer
+  Berlin Heidelberg}, \bibinfo{address}{Berlin, Heidelberg},
+  \bibinfo{pages}{1--10}.
+\newblock
+\showISBNx{978-3-540-45726-8}
+
+
+\bibitem[\protect\citeauthoryear{Boehm and Adve}{Boehm and Adve}{2008}]%
+        {CppConcurrentMemoryModel}
+\bibfield{author}{\bibinfo{person}{Hans-J. Boehm} {and}
+  \bibinfo{person}{Sarita~V. Adve}.} \bibinfo{year}{2008}\natexlab{}.
+\newblock \showarticletitle{Foundations of the C++ Concurrency Memory Model}.
+\newblock \bibinfo{journal}{\emph{SIGPLAN Not.}} \bibinfo{volume}{43},
+  \bibinfo{number}{6} (\bibinfo{date}{June} \bibinfo{year}{2008}),
+  \bibinfo{pages}{68--78}.
+\newblock
+\showISSN{0362-1340}
+\urldef\tempurl%
+\url{https://doi.org/10.1145/1379022.1375591}
+\showDOI{\tempurl}
+
+
+\bibitem[\protect\citeauthoryear{Cohen}{Cohen}{2014}]%
+        {Cohen:2014}
+\bibfield{author}{\bibinfo{person}{Edith Cohen}.}
+  \bibinfo{year}{2014}\natexlab{}.
+\newblock \showarticletitle{All-distances Sketches, Revisited: HIP Estimators
+  for Massive Graphs Analysis}. In \bibinfo{booktitle}{\emph{Proceedings of the
+  33rd ACM SIGMOD-SIGACT-SIGART Symposium on Principles of Database Systems}}
+  \emph{(\bibinfo{series}{PODS '14})}. \bibinfo{publisher}{ACM},
+  \bibinfo{address}{New York, NY, USA}, \bibinfo{pages}{88--99}.
+\newblock
+\showISBNx{978-1-4503-2375-8}
+\urldef\tempurl%
+\url{https://doi.org/10.1145/2594538.2594546}
+\showDOI{\tempurl}
+
+
+\bibitem[\protect\citeauthoryear{Cormode}{Cormode}{2017}]%
+        {Cormode:2017}
+\bibfield{author}{\bibinfo{person}{Graham Cormode}.}
+  \bibinfo{year}{2017}\natexlab{}.
+\newblock \showarticletitle{Data Sketching}.
+\newblock \bibinfo{journal}{\emph{Queue}} \bibinfo{volume}{15},
+  \bibinfo{number}{2}, Article \bibinfo{articleno}{60} (\bibinfo{date}{April}
+  \bibinfo{year}{2017}), \bibinfo{numpages}{19}~pages.
+\newblock
+\showISSN{1542-7730}
+\urldef\tempurl%
+\url{https://doi.org/10.1145/3084693.3104030}
+\showDOI{\tempurl}
+
+
+\bibitem[\protect\citeauthoryear{Cormode, Muthukrishnan, and Yi}{Cormode
+  et~al\mbox{.}}{2011}]%
+        {cormode2011algorithms}
+\bibfield{author}{\bibinfo{person}{Graham Cormode}, \bibinfo{person}{S
+  Muthukrishnan}, {and} \bibinfo{person}{Ke Yi}.}
+  \bibinfo{year}{2011}\natexlab{}.
+\newblock \showarticletitle{Algorithms for distributed functional monitoring}.
+\newblock \bibinfo{journal}{\emph{ACM Transactions on Algorithms (TALG)}}
+  \bibinfo{volume}{7}, \bibinfo{number}{2} (\bibinfo{year}{2011}),
+  \bibinfo{pages}{21}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{David and Nagaraja}{David and
+  Nagaraja}{2004}]%
+        {david2004order}
+\bibfield{author}{\bibinfo{person}{Herbert~Aron David} {and}
+  \bibinfo{person}{Haikady~Navada Nagaraja}.} \bibinfo{year}{2004}\natexlab{}.
+\newblock \showarticletitle{Order statistics}.
+\newblock \bibinfo{journal}{\emph{Encyclopedia of Statistical Sciences}}
+  \bibinfo{volume}{9} (\bibinfo{year}{2004}).
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Druid}{Druid}{[n.d.]}]%
+        {DruidHLL}
+\bibfield{author}{\bibinfo{person}{Druid}.} \bibinfo{year}{[n.d.]}\natexlab{}.
+\newblock \bibinfo{title}{{How We Scaled HyperLogLog: Three Real-World
+  Optimizations}}.
+\newblock
+  \bibinfo{howpublished}{\url{http://druid.io/blog/2014/02/18/hyperloglog-optimizations-for-real-world-systems.html}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Golab, Higham, and Woelfel}{Golab
+  et~al\mbox{.}}{2011}]%
+        {Wojciech}
+\bibfield{author}{\bibinfo{person}{Wojciech Golab}, \bibinfo{person}{Lisa
+  Higham}, {and} \bibinfo{person}{Philipp Woelfel}.}
+  \bibinfo{year}{2011}\natexlab{}.
+\newblock \showarticletitle{Linearizable implementations do not suffice for
+  randomized distributed computation}. In \bibinfo{booktitle}{\emph{Proceedings
+  of the forty-third annual ACM symposium on Theory of computing}}. ACM,
+  \bibinfo{pages}{373--382}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Henzinger, Kirsch, Payer, Sezgin, and
+  Sokolova}{Henzinger et~al\mbox{.}}{2013}]%
+        {Henzinger}
+\bibfield{author}{\bibinfo{person}{Thomas~A Henzinger},
+  \bibinfo{person}{Christoph~M Kirsch}, \bibinfo{person}{Hannes Payer},
+  \bibinfo{person}{Ali Sezgin}, {and} \bibinfo{person}{Ana Sokolova}.}
+  \bibinfo{year}{2013}\natexlab{}.
+\newblock \showarticletitle{Quantitative relaxation of concurrent data
+  structures}. In \bibinfo{booktitle}{\emph{ACM SIGPLAN Notices}},
+  Vol.~\bibinfo{volume}{48}. ACM, \bibinfo{pages}{317--328}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Heule, Nunkesser, and Hall}{Heule
+  et~al\mbox{.}}{2013}]%
+        {GoogleHLL:2013}
+\bibfield{author}{\bibinfo{person}{Stefan Heule}, \bibinfo{person}{Marc
+  Nunkesser}, {and} \bibinfo{person}{Alex Hall}.}
+  \bibinfo{year}{2013}\natexlab{}.
+\newblock \showarticletitle{HyperLogLog in Practice: Algorithmic Engineering of
+  a State of The Art Cardinality Estimation Algorithm}. In
+  \bibinfo{booktitle}{\emph{Proceedings of the EDBT 2013 Conference}}.
+  \bibinfo{address}{Genoa, Italy}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Lynch}{Lynch}{1996}]%
+        {lynch1996distributed}
+\bibfield{author}{\bibinfo{person}{Nancy~A Lynch}.}
+  \bibinfo{year}{1996}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Distributed algorithms}}.
+\newblock \bibinfo{publisher}{Elsevier}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Rihani, Sanders, and Dementiev}{Rihani
+  et~al\mbox{.}}{2014}]%
+        {rihani2014multiqueues}
+\bibfield{author}{\bibinfo{person}{Hamza Rihani}, \bibinfo{person}{Peter
+  Sanders}, {and} \bibinfo{person}{Roman Dementiev}.}
+  \bibinfo{year}{2014}\natexlab{}.
+\newblock \showarticletitle{Multiqueues: Simpler, faster, and better relaxed
+  concurrent priority queues}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:1411.1209}}
+  (\bibinfo{year}{2014}).
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Tai, Sharan, Bailis, and Valiant}{Tai
+  et~al\mbox{.}}{2018}]%
+        {Tai:2018}
+\bibfield{author}{\bibinfo{person}{Kai~Sheng Tai}, \bibinfo{person}{Vatsal
+  Sharan}, \bibinfo{person}{Peter Bailis}, {and} \bibinfo{person}{Gregory
+  Valiant}.} \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Sketching Linear Classifiers over Data Streams}. In
+  \bibinfo{booktitle}{\emph{Proceedings of the 2018 International Conference on
+  Management of Data}} \emph{(\bibinfo{series}{SIGMOD '18})}.
+  \bibinfo{publisher}{ACM}, \bibinfo{address}{New York, NY, USA},
+  \bibinfo{pages}{757--772}.
+\newblock
+\showISBNx{978-1-4503-4703-7}
+\urldef\tempurl%
+\url{https://doi.org/10.1145/3183713.3196930}
+\showDOI{\tempurl}
+
+
+\bibitem[\protect\citeauthoryear{Vitter}{Vitter}{1985}]%
+        {vitter1985random}
+\bibfield{author}{\bibinfo{person}{Jeffrey~S Vitter}.}
+  \bibinfo{year}{1985}\natexlab{}.
+\newblock \showarticletitle{Random sampling with a reservoir}.
+\newblock \bibinfo{journal}{\emph{ACM Transactions on Mathematical Software
+  (TOMS)}} \bibinfo{volume}{11}, \bibinfo{number}{1} (\bibinfo{year}{1985}),
+  \bibinfo{pages}{37--57}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Yang, Jiang, Liu, Huang, Gong, Zhou, Miao, Li,
+  and Uhlig}{Yang et~al\mbox{.}}{2018}]%
+        {Yang:2018}
+\bibfield{author}{\bibinfo{person}{Tong Yang}, \bibinfo{person}{Jie Jiang},
+  \bibinfo{person}{Peng Liu}, \bibinfo{person}{Qun Huang},
+  \bibinfo{person}{Junzhi Gong}, \bibinfo{person}{Yang Zhou},
+  \bibinfo{person}{Rui Miao}, \bibinfo{person}{Xiaoming Li}, {and}
+  \bibinfo{person}{Steve Uhlig}.} \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Elastic Sketch: Adaptive and Fast Network-wide
+  Measurements}. In \bibinfo{booktitle}{\emph{Proceedings of the 2018
+  Conference of the ACM Special Interest Group on Data Communication}}
+  \emph{(\bibinfo{series}{SIGCOMM '18})}. \bibinfo{publisher}{ACM},
+  \bibinfo{address}{New York, NY, USA}, \bibinfo{pages}{561--575}.
+\newblock
+\showISBNx{978-1-4503-5567-4}
+\urldef\tempurl%
+\url{https://doi.org/10.1145/3230543.3230544}
+\showDOI{\tempurl}
+
+
+\end{thebibliography}

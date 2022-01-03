@@ -1,0 +1,199 @@
+\section{Preliminaries and Model}
+\label{sec:sketches}
+
+In Section~\ref{sub:streaming} we describe the streaming model,
+and in Section~\ref{sub:background} we give some background on 
+sketches. 
+Then, in Sections~\ref{sub:relaxed}, we present the relaxed
+consistency definition that we use in this paper.
+
+\subsection{Streaming}
+\label{sub:streaming}
+
+
+We consider a problem of a single sketch summary that is built
+from infinite streams of data items such that there is a
+dedicated thread to every stream that only it processes.
+We denote by $S_{e,p}$ a sketch that with probability $p$
+returns answer with an error of at most $e$ in respect to the
+items that have been processed, and we denote by $n(t)$ the
+number of items that were processed (by all threads) by time
+$t$.
+
+\subsection{Sketches Background}
+\label{sub:background}
+
+%general purpose
+Sketches are very useful in big-data systems, in which data
+arrives in enormously fast and long streams.
+Such streams require too much space to be stored in memory and
+arrive too fast to allow more than one pass over the data.
+The purpose of sketches is to summarize the data, via a single
+pass over a stream, into a memory footprint that on the one hand
+will be small enough to keep thousands and sometimes millions
+sketches in memory, and on the other hand store enough
+information to be able to answer different statistical queries
+about the stream (e.g., the number of unique items in the stream).
+Different sketches differ in the queries they support.
+A common property of all sketches is that once a data item from
+a stream was processed it cannot be undo.
+
+%error vs space  
+Obviously, when we store only a summary of a stream we loose 
+information, and thus unable to return exact statistical
+answers.
+The tradeoff between the allowed error and the memory size of a
+sketch summary has been widely studied in the literature during
+the past 15 years, and we do not try to improve it in this work.
+On the contrary, we try to bound the error and reduce the extra
+space that are added due to concurrency.
+
+%fast but sequential
+In addition of being very space efficient, some of the known
+sketches algorithms require very little computations in order to
+build the summaries, and thus their implementations achieve very
+good throughput when no synchronization is needed.
+However, traditional sketches are sequential. 
+Meaning that there is only one thread that can build a summary,
+and no other thread can concurrently answer queries about
+prefixes of the source stream.
+Moreover, since a data stream usually has more than one source
+(e.g., several network sensors spread over the Internet), in
+practise, there are usually many threads that build the same
+summary.
+In which case, every access to a sketch has to be protected with
+a lock (that hide a memory fence inside), and practically
+speaking, our measurements show that these locks reduce sketches
+throughput by a factor of 3 even when there is no actual
+concurrency.
+ 
+%random store
+Since sketches process long streams and provide probabilistic
+guarantees, a common property of most types' algorithms is a
+fast mechanism to filter data items from the stream.
+Although every algorithm has a different mechanism to filter
+the items that depend on the sketch type, they all simplifies
+the process of merging two summaries of the same sketch. 
+Meaning that given a summary $S_i$ of stream $A_i$ and a
+summary $S_j$ of stream $A_j$, if $S_i$ and $S_j$ were produced
+by the same algorithm, then we can easily merge $S_i$ and $S_j$
+into $S_{j,i}$ that summaries $A_i \cup A_j$.
+We later explain how we use this property to support
+concurrency.
+
+\subsection{Consistency}
+\label{sub:relaxed}
+
+
+\paragraph{Relaxed semantics.}
+
+In this paper we consider a semantic relaxation that we believe
+makes a lot of sense in approximate sketches.
+Our relaxation is a private example of the Stuttering relaxation
+defined in~\cite{Henzinger}, which generalizes the Quasi
+linearizabilty defined by~\cite{Afek}.
+
+Intuitively, we allow every read (statistical quire) to miss
+a bounded number of updates that precede it.
+Formally, given a sequential specification of some object
+$ob$, we define the \emph{k-stuttered sequential specification}
+of $ob$ in the following way:
+A sequential run $r$ of $ob$ satisfies $ob$'s \emph{k-stuttered
+specification} if for every read $rd$ in $r$ there is run $r'$
+that is identical to $r$ except of at most $k$ updates
+that appear in $r$ and not in $r'$, in which $rd$ satisfies
+$sk$'s sequential specification.
+
+% Given a concurrent run $r$ of a sketch $sk$, we say that a
+% \emph{k-stuttered linearization} $L_r$ of $r$ is a
+% sequential run that satisfies $r$'s operation precedence
+% relation and $sk$'s \emph{k-stuttered sequential specification}.
+% We say that a concurrent sketch $sk$ is \emph{k-stuttered
+% relaxed} if every run of $sk$ has a \emph{k-stuttered
+% linearization}.
+
+\paragraph{Strong linearizability.}
+
+Linearizabilty is a very useful toll for deterministic objects,
+but not for randomized ones since the sequential
+specification is not well defined in their case.
+However, given a randomized implementation of a randomized
+sequential object we can define its sequential specification in
+the following way:
+Instead of flipping coins inside the implementation, we assume an
+oracle that produces a vectors of random bits, which we add to
+every API method call.
+Note that given the oracle the behavior of the algorithm is
+deterministic since we abstract a way all the randomization
+inside the oracle.
+Two runs with the same vectors and scheduler are identical. 
+Therefore, given a set of vectors produced by the oracle we can
+define the sequential specification of a sequential
+implementation as the set of all possible runs, and use it do
+define linearizable random object.
+
+Unfortunately, however, as proven in~\cite{Wojciech},
+linearizable implementations do not suffice for randomization.
+If we have a linearizable concurrent object implementation and
+we invoke its API methods with values sampled from some
+distribution expecting some probability on the error of the
+return values (as in our case), then even a weak adversary that
+does not see the bit vectors in advance can actually change the
+probability distribution of the return values over the case in
+which the object is atomic (i.e., its API methods do not
+implemented by the algorithm, but return immediately).
+In other words, it means that concurrency in linearizable
+implementations of randomized sketches' can potentially increase
+the probability of bigger errors.
+
+Fortunately, Wojciech et al. also defines in~\cite{Wojciech} a
+stronger property, called \emph{strong linearizabilty}, which
+guarantees that a strong adversary (i.e., one that sees the
+outcome of each coin flip immediately) gains no additional power
+when atomic objects are replaced by strongly linearizable
+implementations.
+% In addition, they also show in~\cite{Wojciech} that strong
+% linearizabilty is both local and composable.
+Meaning that in order to make sure that our concurrent sketch
+implementation preserves the sequential sketch's probabilistic
+properties we need to make sure that its deterministic version
+(i.e., with the oracle that produced random bit vectors outside
+the implementation) is strongly linearizable.
+
+\begin{definition}[Strong linearizabilty]
+
+Consider a function $f$ that maps a set of runs $R$ to a set of
+runs $R'$. 
+The function $f$ is \emph{prefix preserving}, if
+for any two runs $r, r' \in R$, where $r$ is a prefix of $r'$,
+$f(r)$ is a prefix of $f(r')$.
+%
+Consider a deterministic concurrent algorithm $A$, denote by
+$A_c$ the set of all $A$'s possible runs, and denote by $A_s$ the set of
+all sequential runs that satisfies $A$'s sequential
+specification. 
+An algorithm $A$ is strongly linearizable if there
+is a prefix preserving function $f$ that maps every run $r_c
+\in A_C$ to a run in $r_s \in A_S$ such that $r_s$ preserves
+$r_c$'s preceding relation. 
+
+\end{definition}
+
+
+
+ 
+Intuitively, in strongly linearizable implementations the
+adversary can't change linearizable points in the future.
+Meaning that whenever it chooses the linearizable point of an
+operation $op$ it has to decide for each concurrent with $op$
+operation $op'$ whether its linearizable point is before $op$'s
+or after.
+
+ 
+In this paper we combine relax semantic with strong
+linearizabilty to define \emph{k-stuttered strong
+linearization}:
+We say that an algorithm $A$ is \emph{k-stuttered strong
+linearizable} if it is strongly linearizable in respect to $A$'s
+k-stuttered sequential specification.
+

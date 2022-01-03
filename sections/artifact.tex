@@ -1,0 +1,215 @@
+
+\section{Artifact Appendix}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Abstract}
+
+The artifact contains all the JARs of version 0.12 of the DataSketches
+library, before it moved into Apache (Incubating), as well as configurations
+and shell scripts to run our tests. It can support the results found in
+the evaluated section of our PPoPP'2020 paper Fast Concurrent Data Sketches. To
+validate the results, run the test scripts and check the results piped
+in the according text output files.
+
+\subsection{Artifact check-list (meta-information)}
+
+{\small
+\begin{itemize}
+  \item {\bf Algorithm: $\Theta$ Sketch}
+  \item {\bf Program: Java code}
+  \item {\bf Compilation: JDK 8, and each package is compiled using maven}
+  \item {\bf Binary: Java executables}
+  \item {\bf Run-time environment: Java}
+  \item {\bf Hardware: Ubuntu on 12 core server and 32 core server with hyperthreading disabled}
+  \item {\bf Metrics: Throughput and accuracy}
+  \item {\bf Output: Runtime throughputs, and runtime accuracy}
+  \item {\bf How much time is needed to prepare workflow (approximately)?: Using precomipled packages, none.}
+  \item {\bf How much time is needed to complete experiments (approximately)?: Many hours}
+  \item {\bf Publicly available?: Yes}
+  \item {\bf Code licenses (if publicly available)?: Apache License 2.0}
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Description}
+
+\subsubsection{How delivered}
+
+We have provided all the JAR files we used for running our tests, along with scripts. Meanwhile, the project
+has migrated to the Apache DataSketches (Incubating) library, which is an open source project
+under Apache License 2.0, and is hosted with code, API specifications,
+build instructions, and design documentations on Github.
+
+\subsubsection{Hardware dependencies}
+Our tests require a 12-core Intel Xeon E5-2620 machine, and four Intel
+Xeon E5-4650 processors, each with $8$ cores. Hyper-threading is disabled on both machines..
+
+\subsubsection{Software dependencies}
+Building and running the JAR files requires JDK 8; the files
+don't compile otherwise. To use the automated scripts,
+we require python3 and git to be installed. The Apache DataSketches (Incubating) library 
+has been tested on Ubuntu 12.04/14.04, and is expected to run correctly under other Linux distributions.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Installation}
+
+
+First, clone the repository:
+
+\begin{framed}
+
+\$ git clone \url{https://github.com/ArikRinberg/FastConcurrentDataSketchesArtifact}
+
+\end{framed}
+
+\noindent We have provided the necessary JAR files for recreating our experiment in the repository.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Experiment workflow}
+\label{sec:workflow}
+
+\begin{enumerate}
+  \item After cloning the repository:
+
+  \begin{framed}
+
+  \$ cd FastConcurrentDataSketchesArtifact
+
+  \end{framed}
+
+  \noindent In the current working directory, there should be the following JAR files:
+
+  \begin{itemize}
+    \item memory-0.12.1.jar
+    \item sketches-core-0.12.1-SNAPSHOT.jar
+    \item characterization-0.1.0-SNAPSHOT.jar
+  \end{itemize}
+
+
+  \item Next, run the tests:
+
+  \begin{framed}
+
+  \$ python3 run\_test.py TEST
+
+  \end{framed}
+
+  \noindent Where TEST is one of the following: figure\_1, figure\_6\_a, figure\_6\_b, figure\_7, figure\_8, figure\_9, or table\_2.
+
+
+  \item \label{n:run-test} The results of each test will be in txt files in the current working directory, either SpeedProfile or AccuracyProfile:
+  \paragraph{\textbf{SpeedProfile:}} The txt file contains three columns: \textbf{InU} -- the number of unique items (the $x$
+  axis of most graphs), \textbf{Trials} -- the number of trials for this run, \textbf{nS/u} -- nano seconds per update. The $y$
+  axis of the throughput graphs is given as updates per second, therefore a conversion is needed.
+  \paragraph{\textbf{AccuracyProfile:}} The txt file contains the columns corresponding to the figure legend, where
+  \textbf{InU} is the number of unique items. And, for example, $Q(.5)$ corresponds to the $50^{th}$ precentile.
+
+\end{enumerate}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Figure creation}
+
+The test outputs will be in the form of txt files output to the current working directory. To create the graphs, we
+have provided scripts that extract the data from these files.
+The following scripts correspond to the following figures:
+\begin{itemize}
+  \item Figure~\ref{fig:performance} -- parseFigure1.py
+  \item Figure~\ref{fig:accuracy-res} -- parseAccuracy.py
+  \item All other figures -- parseThroughput.py
+\end{itemize}
+
+To use the figures, pass the txt output files to the corresponding script.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Experiment customization}
+
+Each curve in each experiment is customised in the corresponding configure file.
+The main customisations for the conf files are:
+\begin{itemize}
+  \item \textbf{Trials\_lgMinU / Trials\_lgMaxU:} Range of number of unique numbers over which to run the test.
+  \item \textbf{LgK:} Log size of the global sketch.
+  \item \textbf{CONCURRENT\_THETA\_localLgK:} Log size of the local sketch.
+  \item \textbf{CONCURRENT\_THETA\_maxConcurrencyError:} Maximum error due to concurrency. For non-eager tests, set to 1.
+  \item \textbf{CONCURRENT\_THETA\_numWriters:} Number of writer threads.
+  \item \textbf{CONCURRENT\_THETA\_numReaders:} Number of background reader threads. For our mixed workload, we used 10 reader threads.  
+  \item \textbf{CONCURRENT\_THETA\_ThreadSafe:} Is true if the test should use the concurrent implementation,
+  false if the test should use a lock-based implementation.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Working with source files}
+
+Alternatively, follow the build instructions on Apache DataSketches (Incubating) apache
+page (\url{https://datasketches.apache.org/}), in order to building the above mentioned
+JAR files, now called:
+\begin{itemize}
+  \item incubator-datasketches-java (\url{https://github.com/apache/incubator-datasketches-java})
+  \item incubator-datasketches-memory (\url{https://github.com/apache/incubator-datasketches-memory})
+  \item incubator-datasketches-characterization (\url{https://github.com/apache/incubator-datasketches-characterization})
+\end{itemize}
+
+\noindent The version number of incubator-datasketches-java
+and incubator-datasketches-memory must comply with the version numbers required by incubator-datasketches-characterization.
+The characterization JAR file is an unsupported open-source code base, and
+does not pretend to have the same level of quality as the primary repositories.
+These characterization tests are often long running (some can run for days) and very resource intensive, which makes
+them unsuitable for including in unit tests. The code in this repository are some of
+the test suites we use to create some of the plots on our website and provide evidence for our speed and accuracy claims.
+Alternatively, the datasketches-memory and datasketches-java releases are provided from Maven Central using the Nexus Repository Manager. Go to 
+\url{repository.apache.org} and search for "datasketches".
+
+For convenience we have included these repositories as modules in our main repository along with specific branches and commit id's
+that are known to compile. To compile the jar files:
+\begin{framed}
+
+\$ git clone \url{https://github.com/ArikRinberg/FastConcurrentDataSketchesArtifact}
+
+\$ cd FastConcurrentDataSketchesArtifact
+
+\$ source customCompile.sh
+
+\end{framed}
+
+\noindent The shell script takes care of initialising the submodules, building the source files, and copying the correct
+JAR files to the current directory.
+
+
+\paragraph{\textbf{Workflow for custom JAR files.}}
+
+\begin{enumerate}
+  \item After cloning the repository:
+
+  \begin{framed}
+
+  \$ cd FastConcurrentDataSketchesArtifact
+
+  \end{framed}
+
+  \noindent In the current working directory, there should be the following JAR files:
+
+  \begin{itemize}
+    \item datasketches-memory-1.1.0-incubating.jar
+    \item datasketches-java-1.1.0-incubating.jar
+    \item datasketches-characterization-1.0.0-incubating-SNAPSHOT.jar
+  \end{itemize}
+
+  \item For each .conf file in the conf\_files folder, the following line must be altered:
+  
+  \noindent \textbf{From:} JobProfile=\\com.yahoo.sketches.characterization.uniquecount.TEST
+
+  \noindent \textbf{To:} JobProfile= \\ org.apache.datasketches.characterization.theta.concurrent.TEST
+
+  \noindent Where TEST is either ConcurrentThetaAccuracyProfile or ConcurrentThetaMultithreadedSpeedProfile.
+
+  \item Finally, the following line must be altered in run\_test.py:
+  
+  \noindent \textbf{From:} CMD=\\`java -cp "./*" com.yahoo.sketches.characterization.Job {}'
+
+  \noindent \textbf{To:} CMD=`java -cp "./*" org.apache.datasketches.Job {}'
+
+  \item The tests can now be run as explained in Item~\ref{n:run-test}.
+
+\end{enumerate}

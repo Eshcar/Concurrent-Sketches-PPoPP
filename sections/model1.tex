@@ -1,0 +1,41 @@
+\section{Model}
+\label{sec:model}
+
+We consider a non-sequentially consistent shared memory model that enforces program order on all variables and allows
+definition of \emph{atomic} variables as in Java~\cite{JavaMemoryModel} and C++~\cite{CppConcurrentMemoryModel}.
+Practically speaking, reads and writes of atomic variables are guarded by memory fences, which guarantee
+that all writes executed before a write {\sc w} to an atomic variable are visible to all
+reads that follow (on any thread) a read {\sc r} of the same atomic variable s.t.\ {\sc r} occurs after {\sc w}. 
+
+A thread takes \emph{steps} according to a deterministic \emph{algorithm} defined as a state machine. 
+%Every step is a 3-tuple  $\left\langle state, action, state' \right\rangle$ where \emph{action} is defined by the thread's state machine.
+An \emph{execution} of an algorithm is an alternating sequence of steps and states, 
+where  each step follows some thread's state machine.
+Algorithms implement objects supporting \emph{operations}, such as query and update. 
+An operation's execution consists of a series of steps, beginning with an \emph{invoke} and ending in a \emph{response}. 
+The \emph{history} of an execution $\sigma$, denoted ${\mathcal{H}}(\sigma)$, 
+is its subsequence of operation invoke and response steps.
+In a \emph{sequential history}, each invocation is immediately followed by its response.
+The \emph{sequential specification (SeqSpec)} of an object is its set of allowed sequential histories.
+
+%Correctness of concurrent algorithms is typically formulated using the notion of
+%linearisability~\cite{herlihy1990linearizability}: 
+A \emph{linearisation} of a concurrent execution $\sigma$ is a history $H \in$\emph{SeqSpec}
+such that (1) after adding responses to some pending invocations in $\sigma$ and removing others,
+$H$ and $\sigma$ consist of the same invocations and responses (including parameters)
+and (2) $H$ preserves the order between non-overlapping operations in $\sigma$.
+Golab et al.~\cite{Wojciech} have shown that in order to ensure
+correct behaviour of randomised algorithms under concurrency,
+one has to prove \emph{strong linearisability}:
+
+\begin{definition}[Strong linearisability]
+A function $f$ mapping executions to  histories is \emph{prefix preserving} if
+for every  two executions $\sigma, \sigma'$ s.t.\ $\sigma$ is a prefix of $\sigma'$,  
+$f(\sigma)$ is a prefix of $f(\sigma')$.
+
+An algorithm $A$ is a strongly linearisable implementation of an 
+object $o$ if there is a prefix preserving function $f$ that maps 
+every execution $\sigma$ of $A$ to a linearisation $H$ of $\sigma$.
+\end{definition}
+
+For example, executions of atomic variables are strongly linearisable.
